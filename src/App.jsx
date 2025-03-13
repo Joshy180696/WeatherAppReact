@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import { FaSearch, FaSpinner } from 'react-icons/fa';
+import { FaSearch, FaSpinner, FaTimes } from 'react-icons/fa'; // Added FaTimes for the Clear button
 import { WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm } from 'react-icons/wi';
 
 function App() {
@@ -11,8 +11,9 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
-    if (!city) {
+    if (!city.trim()) { // Check for empty or whitespace-only input
       setError('Please enter a city name.');
+      setWeatherData(null); // Clear previous weather data
       return;
     }
 
@@ -21,7 +22,6 @@ function App() {
     setWeatherData(null);
 
     try {
-      // Updated API URL to match the correct endpoint and format
       const response = await axios.get(`https://weatherdashboardapi.onrender.com/api/WeatherForecast/${city}`);
       setWeatherData(response.data);
       setError('');
@@ -33,6 +33,12 @@ function App() {
     }
   };
 
+  const handleClear = () => {
+    setCity(''); // Clear the input field
+    setWeatherData(null); // Clear the weather data
+    setError(''); // Clear any error messages
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
@@ -42,18 +48,18 @@ function App() {
   const getWeatherIcon = (description) => {
     if (!description) return null;
     const desc = description.toLowerCase();
-    if (desc.includes('clear')) return <WiDaySunny size={50} />;
-    if (desc.includes('cloud')) return <WiCloudy size={50} />;
-    if (desc.includes('rain')) return <WiRain size={50} />;
-    if (desc.includes('snow')) return <WiSnow size={50} />;
-    if (desc.includes('thunder')) return <WiThunderstorm size={50} />;
-    return <WiDaySunny size={50} />;
+    if (desc.includes('clear')) return <WiDaySunny className="weather-icon" />;
+    if (desc.includes('cloud')) return <WiCloudy className="weather-icon" />;
+    if (desc.includes('rain')) return <WiRain className="weather-icon" />;
+    if (desc.includes('snow')) return <WiSnow className="weather-icon" />;
+    if (desc.includes('thunder')) return <WiThunderstorm className="weather-icon" />;
+    return <WiDaySunny className="weather-icon" />;
   };
 
   return (
     <div className="container">
-      
-
+      <h1>Weather Dashboard</h1>
+      <br/>
       <div className="search-bar">
         <input
           type="text"
@@ -67,6 +73,9 @@ function App() {
           {loading ? <FaSpinner className="spinner" /> : <FaSearch />}
           {loading ? 'Loading...' : 'Search'}
         </button>
+        <button className="btn btn-secondary" onClick={handleClear} disabled={loading}>
+          <FaTimes /> Clear
+        </button>
       </div>
 
       {error && (
@@ -76,20 +85,12 @@ function App() {
       )}
 
       {weatherData ? (
-        <div className="row justify-content-center">
-          <div className="col-md-6">
-            <div className="card">
-              <div className="card-body text-center">
-                <h2 className="card-title">{weatherData.city}</h2>
-                {getWeatherIcon(weatherData.description)}
-                <h3>{weatherData.temperature}°C</h3>
-                <p className="text-capitalize">{weatherData.description}</p>
-                <p>Humidity: {weatherData.humidity}%</p>
-                {/* Wind speed is not in the response, so remove this */}
-                {/* <p>Wind Speed: {weatherData.windSpeed} m/s</p> */}
-              </div>
-            </div>
-          </div>
+        <div className="weather-card">
+          <h2>{weatherData.city}</h2>
+          {getWeatherIcon(weatherData.description)}
+          <h3>{weatherData.temperature.toFixed(1)}°C</h3>
+          <p className="text-capitalize">{weatherData.description}</p>
+          <p>Humidity: {weatherData.humidity}%</p>
         </div>
       ) : (
         !loading &&

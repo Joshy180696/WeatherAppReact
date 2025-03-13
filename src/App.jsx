@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { FaSearch, FaSpinner } from 'react-icons/fa';
-import { WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm } from 'react-icons/wi'; // Weather icons
+import { WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm } from 'react-icons/wi';
 
 function App() {
   const [city, setCity] = useState('');
@@ -21,7 +21,8 @@ function App() {
     setWeatherData(null);
 
     try {
-      const response = await axios.get(`https://weatherdashboard-api.onrender.com/api/weatherForecast?city=${city}`);
+      // Updated API URL to match the correct endpoint and format
+      const response = await axios.get(`https://weatherdashboardapi.onrender.com/api/WeatherForecast/${city}`);
       setWeatherData(response.data);
       setError('');
     } catch (err) {
@@ -38,7 +39,6 @@ function App() {
     }
   };
 
-  // Function to get the appropriate weather icon
   const getWeatherIcon = (description) => {
     if (!description) return null;
     const desc = description.toLowerCase();
@@ -47,12 +47,12 @@ function App() {
     if (desc.includes('rain')) return <WiRain size={50} />;
     if (desc.includes('snow')) return <WiSnow size={50} />;
     if (desc.includes('thunder')) return <WiThunderstorm size={50} />;
-    return <WiDaySunny size={50} />; // Default to sunny
+    return <WiDaySunny size={50} />;
   };
 
   return (
     <div className="container">
-
+      <h1>Weather Dashboard</h1>
 
       <div className="search-bar">
         <input
@@ -85,7 +85,8 @@ function App() {
                 <h3>{weatherData.temperature}°C</h3>
                 <p className="text-capitalize">{weatherData.description}</p>
                 <p>Humidity: {weatherData.humidity}%</p>
-                <p>Wind Speed: {weatherData.windSpeed} m/s</p>
+                {/* Wind speed is not in the response, so remove this */}
+                {/* <p>Wind Speed: {weatherData.windSpeed} m/s</p> */}
               </div>
             </div>
           </div>

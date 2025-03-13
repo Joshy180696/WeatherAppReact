@@ -52,7 +52,7 @@ function App() {
 
   return (
     <div className="container">
-      <h1>Weather Dashboard</h1>
+      
 
       <div className="search-bar">
         <input
